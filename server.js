@@ -21,7 +21,15 @@ app.use((req, res) => {
 });
 
 // connects our backend code with the database
-mongoose.connect('mongodb://localhost:27017/companyDB', {
+
+const NODE_ENV = process.env.NODE_ENV;
+let dbUrl = '';
+
+if (NODE_ENV === 'production') dbUrl = 'url to remote db';
+else if (NODE_ENV === 'test') dbUrl = 'mongodb://localhost:27017/companyDBtest';
+else dbUrl = 'mongodb://localhost:27017/companyDB';
+
+mongoose.connect(dbUrl, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
@@ -33,6 +41,8 @@ db.once('open', () => {
 });
 db.on('error', (err) => console.log('Error ' + err));
 
-app.listen('8000', () => {
+const server = app.listen('8000', () => {
   console.log('Server is running on port: 8000');
 });
+
+module.exports = server;
